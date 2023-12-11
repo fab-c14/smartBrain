@@ -1,0 +1,14 @@
+{
+  "name": "smartbrain",
+  "version": "1.0.1",
+  "description": "\"This SmartBrain Detects Faces In Seconds\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fab-c14",
+  "license": "MIT",
+  "dependencies": {
+    "vite": "^5.0.7"
+  }
+}
