@@ -9,6 +9,8 @@
   "author": "Fab-c14",
   "license": "MIT",
   "dependencies": {
+    "particles-bg": "^2.5.5",
+    "react-icons": "^4.12.0",
     "vite": "^5.0.7"
   }
 }
