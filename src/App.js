@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 // import Particles from 'react-particles-js';
 import ParticlesBg from 'particles-bg'
 import Clarifai,{FACE_DETECT_MODEL} from 'clarifai';
-import FaceRecognition from './components/FaceRecognition/FaceRecognition';
-import Navigation from './components/Navigation/Navigation';
+import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
+import Navigation from './Components/Navigation/Navigation';
 
-import Logo from './components/Logo/Logo';
-import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
-import Rank from './components/Rank/Rank';
+import Logo from './Components/Logo/Logo';
+import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
+import Rank from './Components/Rank/Rank';
 import './App.css';
 
 //You must add your own API key here from Clarifai
