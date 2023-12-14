@@ -70,21 +70,13 @@ onButtonSubmit = () => {
  render(){
    return(
     <div className="App">
+      <ParticlesBg type='cobweb' bg={true} />
     <Navigation/>
     <Logo />
     <Rank />
     <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
     <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box}/>
-    {/*
-     // before we start big part
-     1.This is going to be hard.
-     2.the project works
-     3.follow my method.
-     4.Grpc
-     5.Modelid.
-
-    */}
-
+ 
     </div>
    )
  }
