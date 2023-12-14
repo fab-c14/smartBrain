@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-// import Particles from 'react-particles-js';
+
 import ParticlesBg from 'particles-bg'
 import Clarifai,{FACE_DETECT_MODEL} from 'clarifai';
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import Navigation from './Components/Navigation/Navigation';
-
+import SignIn from './Components/SignIn';
 import Logo from './Components/Logo/Logo';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
 import Rank from './Components/Rank/Rank';
 import './App.css';
+import 'tachyons'
 
-//You must add your own API key here from Clarifai
 const app = new Clarifai.App({
  apiKey:'25081218e2ef4b818d5d2f8bb51566e9'
 });
@@ -21,7 +21,8 @@ class App extends Component{
  this.state = {
   input:"",
   imageUrl:"",
-  box:{}// contains values we received
+  box:{},
+  route: 'signin' // when app loads route should be sign in 
  }
  }
 
@@ -67,16 +68,24 @@ onButtonSubmit = () => {
     });
 }
 
+ onRouteChange = (route) =>{
+  this.setState({route:route})
+ }
  render(){
    return(
+
     <div className="App">
       <ParticlesBg type='cobweb' bg={true} />
-    <Navigation/>
-    <Logo />
-    <Rank />
-    <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-    <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box}/>
- 
+      { this.state.route === 'signin' ?
+      <SignIn onRouteChange={()=>this.onRouteChange('home')} /> : 
+      <div>
+      <Navigation onRouteChange={()=>this.onRouteChange('signin')}/>
+      <Logo />
+      <Rank />
+      <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
+      <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box}/>
+      </div>   
+    }
     </div>
    )
  }
