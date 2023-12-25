@@ -1,6 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-
+const bcrypt = require('bcrypt-nodejs')
 const app = express();
 
 app.use(bodyParser.json())
@@ -22,6 +22,13 @@ const database = {
             entries:0,
             joined: new Date()
         },
+    ],
+    login:[
+        {
+            id:'987',
+            has:'',
+            email:'john@gmail.com'
+        }
     ]
 }
 
@@ -31,6 +38,15 @@ app.get('/',(req,res)=>{
 })
 
 app.post('/signin',(req,res)=>{
+
+    // load hash from your password db
+    bcrypt.compare("apples",hash,function(err,hash){
+        // res = true
+    })
+
+    bcrypt.compare("veggies",hash,function(err,res){
+        // res = false
+    })
     // first parse the data
     if (req.body.email === database.users[0].email && req.body.password === database.users[0].password){
         res.json('success')
@@ -42,6 +58,9 @@ app.post('/signin',(req,res)=>{
 
 app.post('/register',(req,res)=>{
     const {email,name,password} = req.body
+    bcrypt.hash(password,null,null,function(err,hash){
+        console.log(hash)
+    })
     database.users.push({
         id:'125',
         name:name,
@@ -81,6 +100,10 @@ app.put('/image',(req,res)=>{
         res.status(400).json('not found ')
     }
 })
+
+
+
+
 app.listen(3000,()=>{
     console.log(`app is running on localhost:3000`)
 })
