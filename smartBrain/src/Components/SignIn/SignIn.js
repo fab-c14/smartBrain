@@ -28,12 +28,13 @@ class SignIn extends React.Component{
         })
         .then(response => response.json())
         .then(data => {
-            if (data=='success'){
-                this.props.onRouteChange('home');
-            }
+           console.log(data==='success')
+           if(data==='success'){
+            console.log('matched')
+           }
         })
 
-        
+        this.props.onRouteChange('home')
     }
     render(){
         const {onRouteChange} = this.props;

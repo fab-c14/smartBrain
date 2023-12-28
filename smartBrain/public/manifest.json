@@ -1,0 +1,16 @@
+{
+    "name": "My React App",
+    "description": "This is a React app.",
+    "version": "1.0.0",
+    "icons": [
+      {
+        "src": "/icons/icon-192.png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/icons/icon-512.png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/"
+  }
