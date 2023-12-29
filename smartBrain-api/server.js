@@ -88,9 +88,9 @@ app.get('/profile/:id',(req,res)=>{
     }
 })
 
-app.get('/images',(req,res)=>{
+app.post('/images',(req,res)=>{
     const {id} = req.body;
-    let found = false;
+    var found = false;
     database.users.forEach(user=>{
         if (user.id === id){
             found = true;
