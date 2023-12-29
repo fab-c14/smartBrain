@@ -34,6 +34,7 @@ class App extends Component {
     };
   }
   loadUser = (data)=>{
+    console.log(data.id)
     this.setState({
       id:data.id,
       name:data.name,
@@ -74,7 +75,7 @@ class App extends Component {
       .then((response) => {
      
         if(response){
-          fetch('https://3000-fabc14-smartbrain-27bkskvfled.ws-us107.gitpod.io/images',{
+          fetch('https://3000-fabc14-smartbrain-27bkskvfled.ws-us107.gitpod.io/image',{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
@@ -122,7 +123,7 @@ class App extends Component {
             <FaceRecognition imageUrl={imageUrl} box={box} />
           </div>
         ) :route === 'register' ? (
-          <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+          <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> 
         ) : (
           <SignIn onRouteChange={this.onRouteChange} />
         )}

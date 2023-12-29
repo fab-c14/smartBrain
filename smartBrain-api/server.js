@@ -88,10 +88,12 @@ app.get('/profile/:id',(req,res)=>{
     }
 })
 
-app.post('/images',(req,res)=>{
+app.post('/image',(req,res)=>{
     const {id} = req.body;
-    var found = false;
+    found = false;
+    console.log(id);
     database.users.forEach(user=>{
+        
         if (user.id === id){
             found = true;
             user.entries++
