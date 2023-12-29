@@ -72,9 +72,19 @@ class App extends Component {
     app.models
       .predict('face-detection', this.state.input)
       .then((response) => {
-        // Handle the response here, which should contain face detection data
-        console.log(response);
-        // Display the face bounding box
+     
+        if(response){
+          fetch('https://3000-fabc14-smartbrain-27bkskvfled.ws-us107.gitpod.io/images',{
+            method:'post',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+              id:this.state.user.id
+            })
+          }).then(response=>response.json())
+          .then(count=>{
+            this.setState(Object.assign(this.state.user,{entries:count}))
+          })
+        }
         this.displayFaceBox(this.calculateFaceLocation(response));
       })
       .catch((error) => {
@@ -84,10 +94,10 @@ class App extends Component {
   };
 
   onRouteChange = (route) => {
-    if(route=='signout'){
+    if(route==='signout'){
       this.setState({isSignedIn:false})
     }
-    else if (route=='home'){
+    else if (route==='home'){
       this.setState({isSignedIn:true})
     }
 
