@@ -22,33 +22,36 @@ class App extends Component {
       input: '',
       imageUrl: '',
       box: {},
-      route: 'signin', // when app loads, route should be sign in
-      isSignedIn:false,
-      user:{
-        id:125,
-        name:'',
-        email:'',
-        entries:0,
+      route: 'signin',
+      isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
         joined: ''
       }
     };
   }
-  loadUser = (data)=>{
-    console.log(data.id)
+
+  loadUser = (data) => {
     this.setState({
-      id:data.id,
-      name:data.name,
-      email:data.email,
-      entries:data.entries,
-      joined:data.joined
-    })
-  }
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    });
+  };
+
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
-    console.log(width, height);
+
     return {
       leftCol: clarifaiFace.left_col * width,
       topRow: clarifaiFace.top_row * height,
@@ -58,7 +61,6 @@ class App extends Component {
   };
 
   displayFaceBox = (box) => {
-    console.log(box);
     this.setState({ box: box });
   };
 
@@ -67,52 +69,52 @@ class App extends Component {
   };
 
   onButtonSubmit = () => {
-    // Set the imageUrl state to the input value
     this.setState({ imageUrl: this.state.input });
 
     app.models
       .predict('face-detection', this.state.input)
       .then((response) => {
-     
-        if(response){
-          fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/image',{
-            method:'post',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({
-              id:this.state.user.id
+        if (response) {
+          fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/image', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: this.state.user.id,
+              imageUrl: this.state.input
+            })
           })
-          }).then(response=>response.json())
-          .then(count=>{
-            this.setState(Object.assign(this.state.user,{entries:count}))
-          })
+            .then(response => response.json())
+            .then(count => {
+              this.setState(prevState => ({
+                user: { ...prevState.user, entries: count }
+              }));
+            })
+            .catch(error => {
+              console.log('Error updating entries:', error);
+            });
         }
         this.displayFaceBox(this.calculateFaceLocation(response));
       })
       .catch((error) => {
-        // Handle any errors here, including the "Method not allowed" error
-        console.log(error);
+        console.log('Clarifai API error:', error);
       });
   };
 
   onRouteChange = (route) => {
-    if(route==='signout'){
-      this.setState({isSignedIn:false})
+    if (route === 'signout') {
+      this.setState({ isSignedIn: false });
+    } else if (route === 'home') {
+      this.setState({ isSignedIn: true });
     }
-    else if (route==='home'){
-      this.setState({isSignedIn:true})
-    }
-
     this.setState({ route: route });
   };
 
   render() {
-    const {isSignedIn,imageUrl,route,box} = this.state;
+    const { isSignedIn, imageUrl, route, box } = this.state;
     return (
-  
       <div className="App">
         <ParticlesBg type="cobweb" bg={true} />
-        {
-        route === 'home' ? (
+        {route === 'home' ? (
           <div>
             <Navigation isSignedIn={isSignedIn} onRouteChange={() => this.onRouteChange('signin')} />
             <Logo />
@@ -123,14 +125,11 @@ class App extends Component {
             />
             <FaceRecognition imageUrl={imageUrl} box={box} />
           </div>
-        ) :(
-              route === 'register' ? (
-              <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> 
-            ) : (
-              <SignIn onRouteChange={this.onRouteChange} />
-            )
-          )
-        }
+        ) : route === 'register' ? (
+          <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+        ) : (
+          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+        )}
       </div>
     );
   }
