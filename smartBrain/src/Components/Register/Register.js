@@ -21,7 +21,7 @@ class Register extends React.Component {
 
     onSubmitSignIn = ()=>{
         console.log(this.state)
-        fetch('https://3000-fabc14-smartbrain-27bkskvfled.ws-us107.gitpod.io/register',{
+        fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/register',{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({

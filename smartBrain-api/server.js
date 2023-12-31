@@ -91,9 +91,8 @@ app.get('/profile/:id',(req,res)=>{
 app.post('/image',(req,res)=>{
     const {id} = req.body;
     found = false;
-    console.log(id);
+    console.log("this is id "+ id + user.id);
     database.users.forEach(user=>{
-        
         if (user.id === id){
             found = true;
             user.entries++
@@ -109,7 +108,7 @@ app.post('/image',(req,res)=>{
 
 
 app.listen(3000,()=>{
-    console.log(`app is running on localhost:3000`)
+    console.log(`app is running on http://localhost:3000`)
 })
 
 /*

@@ -25,7 +25,7 @@ class App extends Component {
       route: 'signin', // when app loads, route should be sign in
       isSignedIn:false,
       user:{
-        id:'',
+        id:125,
         name:'',
         email:'',
         entries:0,
@@ -75,12 +75,12 @@ class App extends Component {
       .then((response) => {
      
         if(response){
-          fetch('https://3000-fabc14-smartbrain-27bkskvfled.ws-us107.gitpod.io/image',{
+          fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/image',{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
               id:this.state.user.id
-            })
+          })
           }).then(response=>response.json())
           .then(count=>{
             this.setState(Object.assign(this.state.user,{entries:count}))
@@ -111,7 +111,8 @@ class App extends Component {
   
       <div className="App">
         <ParticlesBg type="cobweb" bg={true} />
-        {route === 'home' ? (
+        {
+        route === 'home' ? (
           <div>
             <Navigation isSignedIn={isSignedIn} onRouteChange={() => this.onRouteChange('signin')} />
             <Logo />
@@ -122,11 +123,14 @@ class App extends Component {
             />
             <FaceRecognition imageUrl={imageUrl} box={box} />
           </div>
-        ) :route === 'register' ? (
-          <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> 
-        ) : (
-          <SignIn onRouteChange={this.onRouteChange} />
-        )}
+        ) :(
+              route === 'register' ? (
+              <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> 
+            ) : (
+              <SignIn onRouteChange={this.onRouteChange} />
+            )
+          )
+        }
       </div>
     );
   }
