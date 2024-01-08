@@ -35,15 +35,14 @@ class App extends Component {
   }
 
   loadUser = (data) => {
-    this.setState({
-      user: {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        entries: data.entries,
-        joined: data.joined
-      }
-    });
+    // console.log(data);
+    this.setState({user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   };
 
   calculateFaceLocation = (data) => {
@@ -75,7 +74,7 @@ class App extends Component {
       .predict('face-detection', this.state.input)
       .then((response) => {
         if (response) {
-          fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/image', {
+          fetch('https://3000-fabc14-smartbrain-jg6nhapwo8v.ws-us107.gitpod.io/image', {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -118,7 +117,10 @@ class App extends Component {
           <div>
             <Navigation isSignedIn={isSignedIn} onRouteChange={() => this.onRouteChange('signin')} />
             <Logo />
-            <Rank />
+            <Rank  
+                name={this.state.user.name}
+                entries={this.state.user.entries}
+              />
             <ImageLinkForm
               onInputChange={this.onInputChange}
               onButtonSubmit={this.onButtonSubmit}

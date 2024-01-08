@@ -23,10 +23,13 @@ class Register extends React.Component {
     };
 
     onSubmitSignIn = async () => {
-        console.log(this.state);
+        // console.log(this.state);
 
         try {
-            const response = await fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/register', {
+            if(this.state.email==='' || this.state.password==='' || this.state.name===''){
+                return;
+            }
+            const response = await fetch('https://3000-fabc14-smartbrain-jg6nhapwo8v.ws-us107.gitpod.io/register', {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -37,8 +40,8 @@ class Register extends React.Component {
             });
 
             const user = await response.json();
-            console.log(user);
-
+            // console.log(user);
+            
             if (user) {
                 this.props.loadUser(user);
                 this.props.onRouteChange('home');
@@ -94,6 +97,9 @@ class Register extends React.Component {
                                 value="Register"
                                 onClick={this.onSubmitSignIn}
                             />
+                        </div>
+                        <div className="lh-copy mt3">
+                            <p className="f6 link dim black db pointer" onClick={() => this.props.onRouteChange('sign')}>Sign in</p>
                         </div>
                     </form>
                 </main>

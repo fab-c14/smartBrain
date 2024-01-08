@@ -41,15 +41,22 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
+  if (!req.body.email || !req.body.password ){
+    return res.status(400).json("invalid Credentials");
+  };
   if (req.body.email === database.users[0].email && req.body.password === database.users[0].password) {
-    res.json('success');
+    res.json(database.users[0]);
   } else {
-    res.status(400).json('error logging in');
+    res.status(400).json('');
   }
 });
 
 app.post('/register', (req, res) => {
+
   const { email, name, password } = req.body;
+  if (!email || !password || !name){
+    return res.status(400).json("Please Type In Your Details To Register");
+  };
 
   // Add bcrypt hash generation for the password
   const hash = bcrypt.hashSync(password);

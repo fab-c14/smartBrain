@@ -18,28 +18,23 @@ class SignIn extends React.Component {
     };
 
     onSubmitSignIn = () => {
-        console.log(this.state);
 
-        fetch('https://3000-fabc14-smartbrain-869wclgw977.ws-us107.gitpod.io/signin', {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: this.state.signInEmail,
-                password: this.state.signInPassword
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data === 'success');
-                if (data === 'success') {
-                    console.log('matched');
-                    this.props.onRouteChange('home');
-                } else {
-                    console.log('Sign-in failed');
-                }
-            })
-            .catch(error => console.error('Error during sign-in:', error));
-    };
+        fetch('https://3000-fabc14-smartbrain-jg6nhapwo8v.ws-us107.gitpod.io/signin', {
+                  method: 'post',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({
+                    email: this.state.signInEmail,
+                    password: this.state.signInPassword
+                  })
+                })
+                  .then(response => response.json())
+                  .then(user => {
+                    if (user.id) {
+                      this.props.loadUser(user)
+                      this.props.onRouteChange('home');
+                    }
+                  })
+              }
 
     render() {
         return (
