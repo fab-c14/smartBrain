@@ -29,7 +29,7 @@ class Register extends React.Component {
             if(this.state.email==='' || this.state.password==='' || this.state.name===''){
                 return;
             }
-            const response = await fetch('https://3000-fabc14-smartbrain-jg6nhapwo8v.ws-us107.gitpod.io/register', {
+            const response = await fetch('https://3000-fabc14-smartbrain-as8y662bkzv.ws-us108.gitpod.io/register', {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
