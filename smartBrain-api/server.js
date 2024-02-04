@@ -75,10 +75,10 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.get('/profile/:id', (req, res) => {
-  const { id } = req.params;
+app.get('/profile/:_id', (req, res) => {
+  const { _id } = req.params;
 
-  db.collection('smartBrain').findOne({ id: id }, (err, user) => {
+  db.collection('smartBrain').findOne({ _id: _id }, (err, user) => {
     if (err || !user) {
       res.status(400).json('not found');
     } else {
@@ -88,10 +88,10 @@ app.get('/profile/:id', (req, res) => {
 });
 
 app.post('/image', (req, res) => {
-  const { id } = req.body;
+  const { _id } = req.body;
 
   db.collection('smartBrain').findOneAndUpdate(
-    { id: id },
+    { _id: _id },
     { $inc: { entries: 1 } },
     { returnOriginal: false },
     (err, result) => {
