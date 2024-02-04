@@ -2,34 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient} = require('mongodb');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors()); 
 
-const uri = "mongodb+srv://smartBrain:VNVLH56ljxVxVxsW@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+const client = new MongoClient("mongodb+srv://smartBrain:VNVLH56ljxVxVxsW@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority");
+client.connect((err, client) =>{
+    if (err) throw err;
+    console.log("Connected to MongoDB Atlas!");
 });
 
-client.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MongoDB Atlas:');
-    return;
-  }
-
-});
-
-
-const db = client.db();
 
 app.get('/', (req, res) => {
   res.send('Welcome to your app!');
@@ -37,7 +22,6 @@ app.get('/', (req, res) => {
 
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json("Invalid Credentials");
   }
