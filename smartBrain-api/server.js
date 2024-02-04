@@ -2,108 +2,106 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors()); 
 
-const database = {
-  users: [
-    {
-      id: '123',
-      name: 'John',
-      email: 'john@gmail.com',
-      password: 'cookies',
-      entries: 0,
-      joined: new Date(),
-    },
-    {
-      id: '124',
-      name: 'Sally',
-      email: 'sally@gmail.com',
-      password: 'bananas',
-      entries: 0,
-      joined: new Date(),
-    },
-  ],
-  login: [
-    {
-      id: '987',
-      hash: '', // Fix the typo here from 'has' to 'hash'
-      email: 'john@gmail.com',
-    },
-  ],
-};
+const uri = "mongodb+srv://smartBrain:VNVLH56ljxVxVxsW@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+client.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MongoDB Atlas:');
+    return;
+  }
+
+});
+
+
+const db = client.db();
 
 app.get('/', (req, res) => {
-  res.send(database.users);
+  res.send('Welcome to your app!');
 });
 
 app.post('/signin', (req, res) => {
-  if (!req.body.email || !req.body.password ){
-    return res.status(400).json("invalid Credentials");
-  };
-  if (req.body.email === database.users[0].email && req.body.password === database.users[0].password) {
-    res.json(database.users[0]);
-  } else {
-    res.status(400).json('');
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json("Invalid Credentials");
   }
+
+  db.collection('smartBrain').findOne({ email: email }, (err, user) => {
+    if (err || !user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(400).json('Invalid Credentials');
+    } else {
+      res.json(user);
+    }
+  });
 });
 
 app.post('/register', (req, res) => {
-
   const { email, name, password } = req.body;
-  if (!email || !password || !name){
-    return res.status(400).json("Please Type In Your Details To Register");
-  };
 
-  // Add bcrypt hash generation for the password
+  if (!email || !password || !name) {
+    return res.status(400).json("Please Type In Your Details To Register");
+  }
+
   const hash = bcrypt.hashSync(password);
 
-  database.users.push({
-    id: '125',
+  db.collection('smartBrain').insertOne({
     name: name,
     email: email,
-    password: hash, // Save the hashed password
+    password: hash,
     entries: 0,
     joined: new Date(),
+  }, (err, result) => {
+    if (err) {
+      return res.status(500).json('Error registering user');
+    } else {
+      res.json(result.ops[0]);
+    }
   });
-
-  res.json(database.users[database.users.length - 1]);
 });
 
 app.get('/profile/:id', (req, res) => {
-  const { id } = req.params; // Use params instead of body for the ID
-  let found = false;
+  const { id } = req.params;
 
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      found = true;
-      return res.json(user);
+  db.collection('smartBrain').findOne({ id: id }, (err, user) => {
+    if (err || !user) {
+      res.status(400).json('not found');
+    } else {
+      res.json(user);
     }
   });
-
-  if (!found) {
-    res.status(400).json('not found');
-  }
 });
 
 app.post('/image', (req, res) => {
   const { id } = req.body;
-  let found = false;
 
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      found = true;
-      user.entries++;
-      return res.json(user.entries);
+  db.collection('smartBrain').findOneAndUpdate(
+    { id: id },
+    { $inc: { entries: 1 } },
+    { returnOriginal: false },
+    (err, result) => {
+      if (err || !result.value) {
+        res.status(400).json('not found');
+      } else {
+        res.json(result.value.entries);
+      }
     }
-  });
-
-  if (!found) {
-    res.status(400).json('not found');
-  }
+  );
 });
 
 app.listen(3000, () => {
