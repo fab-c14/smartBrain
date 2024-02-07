@@ -2,92 +2,122 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-const client = new MongoClient("mongodb+srv://smartBrain:VNVLH56ljxVxVxsW@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority");
-
-client.connect((err, databaseClient) => {
-  if (err){
-    console.log("There is an Error");
-  }
+// Connect to MongoDB Atlas with Mongoose
+mongoose.connect("mongodb+srv://smartBrain:dYOhi7Za333yFX4H@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
   console.log("Connected to MongoDB Atlas!");
-  const db = databaseClient.db();
-  app.get('/',(req,res)=>{
-    res.json("Welcome to the App")
-  })
-  app.post('/signin', (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json("Invalid Credentials");
+}).catch((err) => {
+  console.error("Failed to connect to MongoDB Atlas:", err);
+});
+
+// Define Mongoose Schema
+const smartBrainSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+  entries: Number,
+  joined: Date
+});
+
+const SmartBrain = mongoose.model('SmartBrain', smartBrainSchema);
+
+// Routes
+app.get('/', (req, res) => {
+  res.json("Welcome to the App")
+});
+
+app.post('/signin', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json("Invalid Credentials");
+  }
+
+  try {
+    const smartBrain = await SmartBrain.findOne({ email: email });
+    if (!smartBrain || !bcrypt.compareSync(password, smartBrain.password)) {
+      return res.status(400).json('Invalid Credentials');
+    } else {
+      res.json(smartBrain);
     }
+  } catch (err) {
+    console.error("Error finding user in signin:", err);
+    return res.status(500).json('Internal Server Error');
+  }
+});
 
-    db.collection('smartBrain').findOne({ email: email }, (err, smartBrain) => {
-      if (err || !smartBrain || !bcrypt.compareSync(password, smartBrain.password)) {
-        return res.status(400).json('Invalid Credentials');
-      } else {
-        res.json(smartBrain);
-      }
+app.post('/register', async (req, res) => {
+  const { email, name, password } = req.body;
+
+  if (!email || !password || !name) {
+    return res.status(400).json("Please Type In Your Details To Register");
+  }
+
+  const hash = bcrypt.hashSync(password);
+
+  try {
+    const newUser = await SmartBrain.create({
+      name: name,
+      email: email,
+      password: hash,
+      entries: 0,
+      joined: new Date(),
     });
-  });
+    res.json(newUser);
+  } catch (err) {
+    console.error("Error registering user:", err);
+    return res.status(500).json('Error registering smartBrain');
+  }
+});
 
-    app.post('/register', (req, res) => {
-    const { email, name, password } = req.body;
+app.get('/profile/:_id', async (req, res) => {
+  const { _id } = req.params;
 
-    if (!email || !password || !name) {
-        return res.status(400).json("Please Type In Your Details To Register");
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json('Invalid _id');
+  }
+
+  try {
+    const smartBrain = await SmartBrain.findById(_id);
+    if (!smartBrain) {
+      return res.status(404).json('User not found');
     }
+    res.json(smartBrain);
+  } catch (err) {
+    console.error("Error finding user profile:", err);
+    return res.status(500).json('Internal Server Error');
+  }
+});
 
-    const hash = bcrypt.hashSync(password);
+app.post('/image', async (req, res) => {
+  const { _id } = req.body;
 
-    db.collection('smartBrain').insertOne({
-        name: name,
-        email: email,
-        password: hash,
-        entries: 0,
-        joined: new Date(),
-    }, (err, result) => {
-        if (err) {
-        return res.status(500).json('Error registering smartBrain');
-        } else {
-        res.json(result.ops[0]);
-        }
-    });
-    });
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json('Invalid _id');
+  }
 
-    app.get('/profile/:_id', (req, res) => {
-    const { _id } = req.params;
+  try {
+    const updatedUser = await SmartBrain.findByIdAndUpdate(_id, { $inc: { entries: 1 } }, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json('User not found');
+    }
+    res.json(updatedUser.entries);
+  } catch (err) {
+    console.error("Error updating image count:", err);
+    return res.status(500).json('Internal Server Error');
+  }
+});
 
-    db.collection('smartBrain').findOne({ _id: _id }, (err, smartBrain) => {
-        if (err || !smartBrain) {
-        res.status(400).json('not found');
-        } else {
-        res.json(smartBrain);
-        }
-    });
-    });
-
-    app.post('/image', (req, res) => {
-    const { _id } = req.body;
-
-    db.collection('smartBrain').findOneAndUpdate(
-        { _id: _id },
-        { $inc: { entries: 1 } },
-        { returnOriginal: false },
-        (err, result) => {
-        if (err || !result.value) {
-            res.status(400).json('not found');
-        } else {
-            res.json(result.value.entries);
-        }
-        }
-    );
-    });
-    app.listen(3000, () => {
-        console.log(`app is running on http://localhost:3000`);
-    });
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`App is running on http://localhost:${PORT}`);
 });

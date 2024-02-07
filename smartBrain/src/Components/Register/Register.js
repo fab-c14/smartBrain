@@ -6,7 +6,8 @@ class Register extends React.Component {
         this.state = {
             email: '',
             password: '',
-            name: ''
+            name: '',
+            errorMessage: ''
         };
     }
 
@@ -23,36 +24,44 @@ class Register extends React.Component {
     };
 
     onSubmitSignIn = async () => {
-        // console.log(this.state);
+        const { email, password, name } = this.state;
+
+        if (!email || !password || !name) {
+            this.setState({ errorMessage: "Please fill in all fields." });
+            return;
+        }
 
         try {
-            if(this.state.email==='' || this.state.password==='' || this.state.name===''){
-                return;
-            }
-            const response = await fetch('https://3000-fabc14-smartbrain-0ribx6ef88c.ws-us108.gitpod.io/register', {
+            const response = await fetch('https://3000-fabc14-smartbrain-h24o6n9vkg3.ws-us108.gitpod.io/register', {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: this.state.email,
-                    password: this.state.password,
-                    name: this.state.name
+                    email: email,
+                    password: password,
+                    name: name
                 })
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to register.');
+            }
+
             const user = await response.json();
-            // console.log(user);
-            
+
             if (user) {
                 this.props.loadUser(user);
                 this.props.onRouteChange('home');
             }
         } catch (error) {
             console.error('Error during registration:', error);
+            this.setState({ errorMessage: "Failed to register. Please try again later." });
         }
     };
 
     render() {
         const { onRouteChange } = this.props;
+        const { errorMessage } = this.state;
+
         return (
             <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
                 <main className="pa4 black-80">
@@ -90,6 +99,7 @@ class Register extends React.Component {
                                 />
                             </div>
                         </fieldset>
+                        {errorMessage && <p className="red">{errorMessage}</p>}
                         <div className="">
                             <input
                                 className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
@@ -99,7 +109,7 @@ class Register extends React.Component {
                             />
                         </div>
                         <div className="lh-copy mt3">
-                            <p className="f6 link dim black db pointer" onClick={() => this.props.onRouteChange('sign')}>Sign in</p>
+                            <p className="f6 link dim black db pointer" onClick={() => onRouteChange('sign')}>Sign in</p>
                         </div>
                     </form>
                 </main>

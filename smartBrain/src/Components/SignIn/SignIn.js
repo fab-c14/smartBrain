@@ -19,7 +19,7 @@ class SignIn extends React.Component {
 
     onSubmitSignIn = () => {
 
-        fetch('https://3000-fabc14-smartbrain-0ribx6ef88c.ws-us108.gitpod.io/signin', {
+        fetch('https://3000-fabc14-smartbrain-h24o6n9vkg3.ws-us108.gitpod.io/signin', {
                   method: 'post',
                   headers: {'Content-Type': 'application/json'},
                   body: JSON.stringify({
@@ -29,7 +29,7 @@ class SignIn extends React.Component {
                 })
                   .then(response => response.json())
                   .then(user => {
-                    if (user.id) {
+                    if (user._id) {
                       this.props.loadUser(user)
                       this.props.onRouteChange('home');
                     }
