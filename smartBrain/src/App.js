@@ -74,7 +74,7 @@ class App extends Component {
       .predict('face-detection', this.state.input)
       .then((response) => {
         if (response) {
-          fetch('https://3000-fabc14-smartbrain-h24o6n9vkg3.ws-us108.gitpod.io/image', {
+          fetch('https://3000-fabc14-smartbrain-ltp52ly0szv.ws-us108.gitpod.io/image', {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

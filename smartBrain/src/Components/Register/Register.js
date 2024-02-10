@@ -32,7 +32,7 @@ class Register extends React.Component {
         }
 
         try {
-            const response = await fetch('https://3000-fabc14-smartbrain-h24o6n9vkg3.ws-us108.gitpod.io/register', {
+            const response = await fetch('https://3000-fabc14-smartbrain-ltp52ly0szv.ws-us108.gitpod.io/register', {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

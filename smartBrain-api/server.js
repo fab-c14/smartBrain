@@ -21,12 +21,36 @@ mongoose.connect("mongodb+srv://smartBrain:dYOhi7Za333yFX4H@cluster0.qaomdha.mon
 
 // Define Mongoose Schema
 const smartBrainSchema = new mongoose.Schema({
+  id: { type: Number, unique: true },
   name: String,
   email: String,
   password: String,
   entries: Number,
   joined: Date
 });
+
+smartBrainSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    try {
+      const doc = await Sequence.findByIdAndUpdate(
+        { _id: 'userId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      this.id = doc.seq;
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
+});
+
+const sequenceSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
+});
+
+const Sequence = mongoose.model('Sequence', sequenceSchema);
 
 const SmartBrain = mongoose.model('SmartBrain', smartBrainSchema);
 
@@ -78,15 +102,14 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.get('/profile/:_id', async (req, res) => {
-  const { _id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(_id)) {
-    return res.status(400).json('Invalid _id');
+app.get('/profile/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json('Invalid id');
   }
 
   try {
-    const smartBrain = await SmartBrain.findById(_id);
+    const smartBrain = await SmartBrain.findById(id);
     if (!smartBrain) {
       return res.status(404).json('User not found');
     }
@@ -98,14 +121,14 @@ app.get('/profile/:_id', async (req, res) => {
 });
 
 app.post('/image', async (req, res) => {
-  const { _id } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(_id)) {
-    return res.status(400).json('Invalid _id');
+  const {id } = req.body;
+  console.log(id)
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json('Invalid id');
   }
 
   try {
-    const updatedUser = await SmartBrain.findByIdAndUpdate(_id, { $inc: { entries: 1 } }, { new: true });
+    const updatedUser = await SmartBrain.findByIdAndUpdate(id, { $inc: { entries: 1 } }, { new: true });
     if (!updatedUser) {
       return res.status(404).json('User not found');
     }
