@@ -12,7 +12,7 @@ import './App.css';
 import 'tachyons';
 
 const app = new Clarifai.App({
-  apiKey: '25081218e2ef4b818d5d2f8bb51566e9',
+  apiKey: 'YOUR_API_KEY_HERE',
 });
 
 class App extends Component {
