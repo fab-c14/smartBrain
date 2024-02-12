@@ -9,8 +9,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// Connect to MongoDB Atlas with Mongoose
-mongoose.connect("mongodb+srv://smartBrain:dYOhi7Za333yFX4H@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority", {
+// Connect to MongoDB Atlas with Mongoose // replace the <Password With Your MongoDb Password 
+mongoose.connect("mongodb+srv://smartBrain:<Password>@cluster0.qaomdha.mongodb.net/?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
